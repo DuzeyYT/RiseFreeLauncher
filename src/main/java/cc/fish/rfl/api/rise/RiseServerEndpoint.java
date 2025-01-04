@@ -27,7 +27,7 @@ public class RiseServerEndpoint {
 
         RiseServer.LOGGER.info("Received message with id: {}", id);
 
-        if (id > 1)
+        if (id > 2)
             return;
 
         JSONObject output = new JSONObject();
@@ -40,6 +40,9 @@ public class RiseServerEndpoint {
             output.put("c", 90.0f);
             output.put("d", System.currentTimeMillis());
             output.put("e", "Hello, World!");
+        }
+        if (id == 2) {
+            output.put("a", jsonObject.get("a").toString());
         }
 
         session.getAsyncRemote().sendText(output.toString());

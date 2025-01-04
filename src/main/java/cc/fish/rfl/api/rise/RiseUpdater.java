@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -29,21 +27,13 @@ public class RiseUpdater {
     public final String CLIENT_HASH_URL = "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt";
 
     public final String CLIENT_PATH = "client.jar";
-    public final String NATIVE_PATH = "rise-natives";
     public final String LIBRARY_PATH = "libraries.jar";
     public final String COMPRESSED_PATH = "compressed.jar";
-    public final String AGENT_PATH = "agent.jar";
 
     public void checkAndUpdate() {
         LOGGER.info("Checking for client updates...");
         String latestVersion = DownloadUtil.readFromWeb(RISE_LATEST_VERSION_URL);
         LOGGER.info("(Latest version: {})", latestVersion);
-
-        File agentFile = new File(AGENT_PATH);
-        if (!agentFile.exists()) {
-            LOGGER.error("Agent file was not found. Please download it from the Github repository.");
-            System.exit(1);
-        }
 
         try {
             String clientHash = DownloadUtil.readFromWeb(CLIENT_HASH_URL);
@@ -76,13 +66,6 @@ public class RiseUpdater {
                 return;
             }
 
-            File nativeDir = new File(NATIVE_PATH);
-            if (!nativeDir.exists()) {
-                LOGGER.info("Native DLLs not found, extracting...");
-                extractNatives();
-                return;
-            }
-
             LOGGER.info("Client is up to date");
         } catch (Exception e) {
             LOGGER.error("Failed to update client", e);
@@ -94,48 +77,14 @@ public class RiseUpdater {
             if (delete) {
                 FileUtils.forceDelete(new File(CLIENT_PATH));
                 FileUtils.forceDelete(new File(LIBRARY_PATH));
-                FileUtils.forceDelete(new File(NATIVE_PATH));
             }
 
             DownloadUtil.downloadFile("https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar", CLIENT_PATH);
             DownloadUtil.downloadFile("https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar", LIBRARY_PATH);
-            extractNatives();
+
             createCompressedFile();
 
             LOGGER.info("Client updated successfully");
-        } catch (IOException e) {
-            LOGGER.error("Failed to update client", e);
-        }
-    }
-
-    private void extractNatives() {
-        Map<String, byte[]> nativeDll = new HashMap<>();
-
-        try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
-            for (ZipEntry entry : libraryZip.stream().toList()) {
-                if (!entry.getName().endsWith(".dll") || entry.getName().contains("/")) continue;
-
-                nativeDll.put(entry.getName(), libraryZip.getInputStream(entry).readAllBytes());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to update client", e);
-        }
-
-        if (nativeDll.isEmpty()) {
-            LOGGER.error("No native DLLs found in client");
-            return;
-        }
-
-        try {
-            File nativeDir = new File(NATIVE_PATH);
-            boolean created = nativeDir.mkdirs();
-
-            for (Map.Entry<String, byte[]> entry : nativeDll.entrySet()) {
-                File nativeFile = new File(NATIVE_PATH, entry.getKey());
-                FileUtils.writeByteArrayToFile(nativeFile, entry.getValue());
-            }
-
-            LOGGER.info("Native DLLs extracted successfully");
         } catch (IOException e) {
             LOGGER.error("Failed to update client", e);
         }
@@ -146,21 +95,21 @@ public class RiseUpdater {
 
             List<String> writtenEntries = new ArrayList<>();
 
-            try (ZipFile clientZip = new ZipFile(CLIENT_PATH)) {
-                for (ZipEntry entry : clientZip.stream().toList()) {
+            try (ZipFile libraryZip = new ZipFile(CLIENT_PATH)) {
+                for (ZipEntry entry : libraryZip.stream().toList()) {
                     writtenEntries.add(entry.getName());
                     zipOut.putNextEntry(new ZipEntry(entry.getName()));
-                    zipOut.write(clientZip.getInputStream(entry).readAllBytes());
+                    zipOut.write(libraryZip.getInputStream(entry).readAllBytes());
                     zipOut.closeEntry();
                 }
             }
 
-            try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
-                for (ZipEntry entry : libraryZip.stream().toList()) {
+            try (ZipFile clientZip = new ZipFile(LIBRARY_PATH)) {
+                for (ZipEntry entry : clientZip.stream().toList()) {
                     if (writtenEntries.contains(entry.getName())) continue;
                     if (entry.getName().startsWith("org/objectweb")) continue;
                     zipOut.putNextEntry(new ZipEntry(entry.getName()));
-                    zipOut.write(libraryZip.getInputStream(entry).readAllBytes());
+                    zipOut.write(clientZip.getInputStream(entry).readAllBytes());
                     zipOut.closeEntry();
                 }
             }
