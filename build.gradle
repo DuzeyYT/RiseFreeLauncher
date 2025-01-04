@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+}
+
+def main = 'cc.fish.rfl.RflMain'
+group = 'cc.fish'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
+
+    compileOnly 'org.projectlombok:lombok:latest.integration'
+    annotationProcessor 'org.projectlombok:lombok:latest.integration'
+
+    implementation 'org.ow2.asm:asm:latest.integration'
+    implementation 'org.ow2.asm:asm-commons:latest.integration'
+    implementation 'org.ow2.asm:asm-util:latest.integration'
+    implementation 'org.ow2.asm:asm-tree:latest.integration'
+
+    implementation 'org.apache.commons:commons-io:latest.integration'
+
+    implementation 'org.json:json:latest.integration'
+
+    implementation 'org.glassfish.tyrus:tyrus-server:2.2.0'
+    implementation 'org.glassfish.tyrus:tyrus-container-grizzly-server:2.2.0'
+
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': main
+    }
+
+    archiveFileName = "Launcher.jar"
+
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude 'META-INF/*.*'
+        exclude 'META-INF/*'
+        exclude 'log4j2.propertyMapping.json'
+    }
+}

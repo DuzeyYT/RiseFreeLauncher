@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+}
+
+def main = 'cc.fish.agent.RiseAgent'
+group = 'cc.fish'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    // add repository.ow2.org as a maven repository
+    maven {
+        url 'https://repository.ow2.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+java.sourceCompatibility = 21
+java.targetCompatibility = 21
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+gradle.buildFinished {
+    // get file from "build/libs/" directory
+    project.buildDir.listFiles().each { file ->
+        if (file.name == "libs") {
+            file.listFiles().each { jar ->
+                def folderLocation = "$rootDir/build/libs"
+                new File(folderLocation).mkdirs()
+                jar.renameTo(new File("${folderLocation}/${jar.name}"));
+            }
+        }
+    }
+
+    project.buildDir.deleteDir()
+}
+
+dependencies {
+    implementation 'org.ow2.asm:asm:9.8-SNAPSHOT'
+    implementation 'org.ow2.asm:asm-commons:9.8-SNAPSHOT'
+    implementation 'org.ow2.asm:asm-util:9.8-SNAPSHOT'
+    implementation 'org.ow2.asm:asm-tree:9.8-SNAPSHOT'
+
+    compileOnly 'org.projectlombok:lombok:latest.integration'
+    annotationProcessor 'org.projectlombok:lombok:latest.integration'
+}
+
+jar {
+    manifest {
+        attributes 'Premain-Class': main
+        attributes 'Built-By': 'Fish'
+        attributes 'Can-Redefine-Classes': 'true'
+        attributes 'Can-Retransform-Classes': 'true'
+        attributes 'Can-Set-Native-Method-Prefix': 'true'
+    }
+
+    archiveFileName = 'Agent.jar'
+    exclude 'module-info.class'
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.*'
+        exclude 'META-INF/*'
+        exclude 'log4j2.propertyMapping.json'
+    }
+}
