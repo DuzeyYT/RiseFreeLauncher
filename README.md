@@ -17,6 +17,10 @@
 > If you don't have Java 21 or JAVA_HOME set, you can download it from [here](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)<br>
 > It will set your %JAVA_HOME% to the correct version automatically.
 
+> [!CAUTION]\
+> You are using this at your own risk.<br>
+> Please check the Discord server after updates to see if this still works/is safe to use.<br>
+
 ## Requirements
 - Windows 10+ (this currently only works on Windows)
 - [Java 21+](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
