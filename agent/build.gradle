@@ -22,21 +22,6 @@ tasks.withType(Jar).configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-gradle.buildFinished {
-    // get file from "build/libs/" directory
-    project.buildDir.listFiles().each { file ->
-        if (file.name == "libs") {
-            file.listFiles().each { jar ->
-                def folderLocation = "$rootDir/build/libs"
-                new File(folderLocation).mkdirs()
-                jar.renameTo(new File("${folderLocation}/${jar.name}"))
-            }
-        }
-    }
-
-    project.buildDir.deleteDir()
-}
-
 dependencies {
     implementation 'org.ow2.asm:asm:9.8-SNAPSHOT'
     implementation 'org.ow2.asm:asm-commons:9.8-SNAPSHOT'
