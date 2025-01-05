@@ -42,7 +42,7 @@ public class RiseServerEndpoint {
             output.put("e", "Hello, World!");
         }
         if (id == 2) {
-            output.put("a", jsonObject.get("a").toString());
+            output.put("a", RiseConfigConverter.convert(jsonObject.getString("a")));
         }
 
         session.getAsyncRemote().sendText(output.toString());
