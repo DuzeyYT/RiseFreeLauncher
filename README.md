@@ -3,7 +3,7 @@
 </div>
 
 ---
-![RFL Server](https://discord.com/api/guilds/1325264451141763113/widget.png?style=banner2)
+[![RFL Server](https://discord.com/api/guilds/1325264451141763113/widget.png?style=banner2)](https://discord.gg/jgjke4aCQQ)
 
 > [!NOTE]\
 > This is a fully open source and free launcher for [Rise](https://vantage.rip/#products)<br>
