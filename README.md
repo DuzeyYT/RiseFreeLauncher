@@ -1,4 +1,6 @@
-![Rise](media/rise.png)
+<div align="center">
+  <img src="media/rise.png" alt="">
+</div>
 
 ---
 
