@@ -2,8 +2,8 @@ package cc.fish.agent;
 
 import cc.fish.agent.api.util.ASMUtil;
 import cc.fish.agent.api.util.RiseUtil;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -41,6 +41,13 @@ public class RiseAgent {
 
             try {
                 ClassNode classNode = ASMUtil.getNode(classFileBuffer);
+
+                // patch login screen
+                if (RiseUtil.isLoginScreenClass(classNode)
+                        && RiseUtil.patchLoginScreen(classNode)) {
+                    return ASMUtil.writeClassToArray(classNode);
+                }
+
                 MethodNode connectMethod = RiseUtil.isClassWSC(classNode);
                 if (connectMethod == null) return classFileBuffer;
 

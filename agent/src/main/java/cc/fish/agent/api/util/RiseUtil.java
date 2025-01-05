@@ -28,9 +28,71 @@ public class RiseUtil implements Opcodes {
         return null;
     }
 
-    public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
-        // JOptionPane.showMessageDialog(null, "Found WSC class: " + wscClass.name);
+    public boolean isLoginScreenClass(ClassNode classNode) {
+        return classNode.name.equals("hackclient/rise/xz");
+    }
 
+    public boolean patchLoginScreen(ClassNode classNode) {
+        MethodNode loginGuiLambda = RiseUtil.isLoginGuiLambda(classNode);
+        if (loginGuiLambda != null) {
+            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiLambda, "hackclient/rise/aac.hS()V");
+            if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
+                ASMUtil.deleteInsnBetween(loginGuiLambda, usernameField[0], usernameField[1]);
+        }
+
+        MethodNode loginGuiDrawScreenMethod = RiseUtil.isLoginGuiDrawScreen(classNode);
+        if (loginGuiDrawScreenMethod != null) {
+            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiDrawScreenMethod, "hackclient/rise/xn.b(IIF)V");
+            if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
+                ASMUtil.deleteInsnBetween(loginGuiDrawScreenMethod, usernameField[0], usernameField[1]);
+        }
+
+        MethodNode loginMethod = RiseUtil.findLoginMethod(classNode);
+        if (loginMethod != null)
+            RiseUtil.patchLoginMethod(loginMethod);
+
+        return loginGuiLambda != null || loginGuiDrawScreenMethod != null || loginMethod != null;
+    }
+
+    public MethodNode findLoginMethod(ClassNode classNode) {
+        if (!classNode.name.equals("hackclient/rise/xz")) return null;
+
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.name.equals("x") && methodNode.desc.equals("(Ljava/lang/String;)V"))
+                return methodNode;
+        }
+        return null;
+    }
+
+    public void patchLoginMethod(MethodNode methodNode) {
+        for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
+            if (abstractInsnNode.getOpcode() == Opcodes.ALOAD
+                    && abstractInsnNode instanceof VarInsnNode varInsnNode
+                    && varInsnNode.var == 1) {
+                methodNode.instructions.insertBefore(abstractInsnNode, new LdcInsnNode("anal woods"));
+                methodNode.instructions.remove(abstractInsnNode);
+                break;
+            }
+        }
+    }
+
+    public MethodNode isLoginGuiLambda(ClassNode classNode) {
+        if (!classNode.name.equals("hackclient/rise/xz")) return null;
+        for (MethodNode methodNode : classNode.methods)
+            if (methodNode.name.equals("c") && methodNode.desc.equals("(Lnet/minecraft/client/gui/cz;)V"))
+                return methodNode;
+        return null;
+    }
+
+    public MethodNode isLoginGuiDrawScreen(ClassNode classNode) {
+        if (!classNode.name.equals("hackclient/rise/xz")) return null;
+        for (MethodNode methodNode : classNode.methods)
+            if (methodNode.name.equals("drawScreen") && methodNode.desc.equals("(IIF)V"))
+                return methodNode;
+        return null;
+    }
+
+    public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
         for (MethodNode methodNode : wscClass.methods) {
             for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
                 if (abstractInsnNode instanceof MethodInsnNode methodInsnNode
@@ -40,7 +102,6 @@ public class RiseUtil implements Opcodes {
                                 instanceof MethodInsnNode previousMethodInsnNode) {
 
                     String className = previousMethodInsnNode.owner.replace("/", ".");
-                    // JOptionPane.showMessageDialog(null, "Found class: " + className);
                     try {
                         Class<?> clazz = loader.loadClass(className);
                         for (Field field : clazz.getDeclaredFields()) {
