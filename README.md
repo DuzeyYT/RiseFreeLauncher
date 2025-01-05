@@ -30,6 +30,10 @@
 2. Put them in the same directory and run **launcher.jar** with the following command<br>
 ```java -jar launcher.jar```
 3. Enjoy!
+
+## How to launch with updating
+Launch the launcher with the following command<br>
+```java -jar launcher.jar --no-update```<br>
 ---
 
 ## Credits

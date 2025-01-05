@@ -18,14 +18,17 @@ public class RflMain {
 
     public static final Logger LOGGER = LogManager.getLogger("RFL");
 
-    public void start() {
+    public void start(String[] args) {
         System.out.println(ConsoleUtil.getCustomArt("RISE FREE LAUNCHER", null));
 
         LOGGER.info("Welcome to Rise Free Launcher!");
         ConsoleUtil.emptyLine();
 
-        RiseUpdater.checkAndUpdate();
-        ConsoleUtil.emptyLine();
+        // add option to disable auto updates in case this has been patched.
+        if (args.length == 0 || !args[0].equals("--no-update")) {
+            RiseUpdater.checkAndUpdate();
+            ConsoleUtil.emptyLine();
+        }
 
         LOGGER.info("Starting Rise Client for Free...");
         new Thread(RiseLauncher::launch).start();
@@ -37,9 +40,9 @@ public class RflMain {
     }
 
     public static void main(String[] args) {
-        RflMain.getInstance().start();
+        RflMain.getInstance().start(args);
     }
-
+    
     public static RflMain getInstance() {
         if (instance == null) {
             instance = new RflMain();
