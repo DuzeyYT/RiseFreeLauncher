@@ -17,7 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("LoggingSimilarMessage")
-@Getter @Setter
+@Getter
+@Setter
 public class RiseServer {
 
     public static final Logger LOGGER = LogManager.getLogger("Rise Server");
@@ -26,21 +27,24 @@ public class RiseServer {
     public static String encryptionKey;
 
     public void startServer() {
-         // create temporary socket for the agent to give us the encryption key
-        new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(8444)) {
-                Socket agentSocket = serverSocket.accept();
-                LOGGER.info("Agent connected...");
+        // create temporary socket for the agent to give us the encryption key
+        new Thread(
+                        () -> {
+                            try (ServerSocket serverSocket = new ServerSocket(8444)) {
+                                Socket agentSocket = serverSocket.accept();
+                                LOGGER.info("Agent connected...");
 
-                DataInputStream in = new DataInputStream(agentSocket.getInputStream());
-                encryptionKey = in.readUTF();
-                LOGGER.info("Received key: {}", encryptionKey);
+                                DataInputStream in =
+                                        new DataInputStream(agentSocket.getInputStream());
+                                encryptionKey = in.readUTF();
+                                LOGGER.info("Received key: {}", encryptionKey);
 
-                agentSocket.close();
-            } catch (Exception e) {
-                LOGGER.error("Failed to start server: {}", e.getMessage());
-            }
-        }).start();
+                                agentSocket.close();
+                            } catch (Exception e) {
+                                LOGGER.error("Failed to start server: {}", e.getMessage());
+                            }
+                        })
+                .start();
 
         try {
             LOGGER.info("Starting backend server...");

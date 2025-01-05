@@ -29,7 +29,7 @@ gradle.buildFinished {
             file.listFiles().each { jar ->
                 def folderLocation = "$rootDir/build/libs"
                 new File(folderLocation).mkdirs()
-                jar.renameTo(new File("${folderLocation}/${jar.name}"));
+                jar.renameTo(new File("${folderLocation}/${jar.name}"))
             }
         }
     }

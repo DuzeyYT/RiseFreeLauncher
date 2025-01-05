@@ -42,7 +42,7 @@ public class RflMain {
     public static void main(String[] args) {
         RflMain.getInstance().start(args);
     }
-    
+
     public static RflMain getInstance() {
         if (instance == null) {
             instance = new RflMain();

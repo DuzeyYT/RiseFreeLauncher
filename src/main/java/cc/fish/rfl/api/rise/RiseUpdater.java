@@ -24,9 +24,12 @@ import java.util.zip.ZipOutputStream;
 public class RiseUpdater {
     public final Logger LOGGER = LogManager.getLogger("Rise Updater");
 
-    public final String RISE_LATEST_VERSION_URL = "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version";
-    public final String RISE_LIBRARY_HASH_URL = "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries_Hash.txt";
-    public final String CLIENT_HASH_URL = "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt";
+    public final String RISE_LATEST_VERSION_URL =
+            "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version";
+    public final String RISE_LIBRARY_HASH_URL =
+            "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries_Hash.txt";
+    public final String CLIENT_HASH_URL =
+            "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt";
 
     public final String CLIENT_PATH = "client.jar";
     public final String NATIVE_PATH = "rise-natives";
@@ -41,7 +44,8 @@ public class RiseUpdater {
 
         File agentFile = new File(AGENT_PATH);
         if (!agentFile.exists()) {
-            LOGGER.error("Agent file was not found. Please download it from the Github repository.");
+            LOGGER.error(
+                    "Agent file was not found. Please download it from the Github repository.");
             System.exit(1);
         }
 
@@ -97,8 +101,12 @@ public class RiseUpdater {
                 FileUtils.forceDelete(new File(NATIVE_PATH));
             }
 
-            DownloadUtil.downloadFile("https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar", CLIENT_PATH);
-            DownloadUtil.downloadFile("https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar", LIBRARY_PATH);
+            DownloadUtil.downloadFile(
+                    "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar",
+                    CLIENT_PATH);
+            DownloadUtil.downloadFile(
+                    "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar",
+                    LIBRARY_PATH);
             extractNatives();
             createCompressedFile();
 
@@ -174,7 +182,7 @@ public class RiseUpdater {
     public String getFileHash(String filePath) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            try (FileInputStream fis = new FileInputStream(filePath);){
+            try (FileInputStream fis = new FileInputStream(filePath); ) {
                 int bytesCount;
                 byte[] byteArray = new byte[1024];
                 while ((bytesCount = fis.read(byteArray)) != -1) {
@@ -187,8 +195,7 @@ public class RiseUpdater {
                 sb.append(String.format("%02x", b));
             }
             return sb.toString();
-        }
-        catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             return null;
         }
     }

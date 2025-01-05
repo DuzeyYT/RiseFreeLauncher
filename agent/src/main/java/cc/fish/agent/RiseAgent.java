@@ -19,10 +19,8 @@ import java.util.List;
 
 // maybe change this to a custom runtime (modify JDK)
 public class RiseAgent {
-    public static final List<String> EXCLUDED_PREFIXES = List.of(
-            "java/", "javax/", "sun/",
-            "com/sun/", "jdk/"
-    );
+    public static final List<String> EXCLUDED_PREFIXES =
+            List.of("java/", "javax/", "sun/", "com/sun/", "jdk/");
 
     public static void premain(String args, Instrumentation instrumentation) {
         instrumentation.addTransformer(new RiseAgentTransformer());
@@ -31,45 +29,41 @@ public class RiseAgent {
     public static class RiseAgentTransformer implements ClassFileTransformer {
 
         @Override
-        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, java.security.ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        public byte[] transform(
+                ClassLoader loader,
+                String className,
+                Class<?> classBeingRedefined,
+                java.security.ProtectionDomain protectionDomain,
+                byte[] classFileBuffer) {
             if (EXCLUDED_PREFIXES.stream().anyMatch(className::startsWith)) {
-                return classfileBuffer;
+                return classFileBuffer;
             }
 
             try {
-                ClassNode classNode = ASMUtil.getNode(classfileBuffer);
+                ClassNode classNode = ASMUtil.getNode(classFileBuffer);
                 MethodNode connectMethod = RiseUtil.isClassWSC(classNode);
-                if (connectMethod == null)
-                    return classfileBuffer;
-//                JOptionPane.showMessageDialog(null, "Found WSC class: " + classNode.name);
+                if (connectMethod == null) return classFileBuffer;
 
                 // found wsc class
                 boolean replaced = RiseUtil.replaceURI(connectMethod);
                 if (!replaced) {
                     JOptionPane.showMessageDialog(null, "Failed to replace URI");
-                    return classfileBuffer;
+                    return classFileBuffer;
                 }
-//                JOptionPane.showMessageDialog(null, "Successfully replaced Web Socket");
 
-                // get encryption key
                 String encryptionKey = RiseUtil.extractEncryptionKey(loader, classNode);
-//                JOptionPane.showMessageDialog(null, "Encryption Key: " + encryptionKey);
 
                 // send encryption key to server
                 try (Socket socket = new Socket("localhost", 8444)) {
                     DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                     out.writeUTF(encryptionKey);
                 } catch (Exception e) {
-//                    JOptionPane.showMessageDialog(null, "Failed to send encryption key: " + e.getMessage());
                     System.exit(1);
                 }
 
                 return ASMUtil.writeClassToArray(classNode);
             } catch (Exception e) {
-//                if (className.startsWith("rip/vantage/network/handler/WebSocketClient")) {
-//                    JOptionPane.showMessageDialog(null, "Failed to transform class: " + e.getMessage());
-//                }
-                return classfileBuffer;
+                return classFileBuffer;
             }
         }
     }

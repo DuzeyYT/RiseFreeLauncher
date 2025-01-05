@@ -13,14 +13,17 @@ public class RiseLauncher {
     public void launch() {
         LOGGER.info("Launching Rise...");
 
-        ConsoleUtil.runCommand("java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path=rise-natives -cp compressed.jar Start");
+        ConsoleUtil.runCommand(
+                "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path=rise-natives -cp compressed.jar Start");
 
-        //try {
-        //    ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar", "-XX:+DisableAttachMechanism", "-noverify", "-Djava.library.path=rise-natives", "-cp", "compressed.jar", "Start");
+        // try {
+        //    ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",
+        // "-XX:+DisableAttachMechanism", "-noverify", "-Djava.library.path=rise-natives", "-cp",
+        // "compressed.jar", "Start");
         //    processBuilder.inheritIO();
         //    processBuilder.start();
-        //} catch (Exception e) {
+        // } catch (Exception e) {
         //    LOGGER.error("Failed to launch Rise: {}", e.getMessage());
-        //}
+        // }
     }
 }

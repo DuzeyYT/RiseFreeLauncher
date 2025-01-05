@@ -19,9 +19,19 @@ public class RiseConfigConverter {
             JSONObject moduleObject = jsonObject.getJSONObject(module);
 
             if (moduleObject.has("state"))
-                stringBuilder.append(module).append("_").append("e1_").append(moduleObject.getBoolean("state")).append("\n");
+                stringBuilder
+                        .append(module)
+                        .append("_")
+                        .append("e1_")
+                        .append(moduleObject.getBoolean("state"))
+                        .append("\n");
             if (moduleObject.has("keyCode"))
-                stringBuilder.append(module).append("_").append("kc_").append(moduleObject.getInt("keyCode")).append("\n");
+                stringBuilder
+                        .append(module)
+                        .append("_")
+                        .append("kc_")
+                        .append(moduleObject.getInt("keyCode"))
+                        .append("\n");
 
             // settings
             for (String setting : moduleObject.keySet()) {
@@ -30,9 +40,19 @@ public class RiseConfigConverter {
                 Object value = moduleObject.get(setting);
                 if (value instanceof JSONObject jsonObject1) {
                     for (String jsonObject1Key : jsonObject1.keySet()) {
-                        stringBuilder.append(module).append("_").append(setting).append("_").append(jsonObject1Key)
-                                .append("_").append(jsonObject1.get(jsonObject1Key)
-                                .toString().replaceAll("\"", "")).append("\n");
+                        stringBuilder
+                                .append(module)
+                                .append("_")
+                                .append(setting)
+                                .append("_")
+                                .append(jsonObject1Key)
+                                .append("_")
+                                .append(
+                                        jsonObject1
+                                                .get(jsonObject1Key)
+                                                .toString()
+                                                .replaceAll("\"", ""))
+                                .append("\n");
                     }
                 }
             }

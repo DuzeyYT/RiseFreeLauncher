@@ -13,7 +13,8 @@ public class RiseServerEndpoint {
     @OnMessage
     public void onMessage(String message, Session session) {
         if (RiseServer.encryptionKey == null) {
-            RflMain.LOGGER.error("Cannot read message because encryption key is missing. Restart the client.");
+            RflMain.LOGGER.error(
+                    "Cannot read message because encryption key is missing. Restart the client.");
             return;
         }
         String decrypted = EncryptionUtil.decrypt(message, RiseServer.encryptionKey);
@@ -27,8 +28,7 @@ public class RiseServerEndpoint {
 
         RiseServer.LOGGER.info("Received message with id: {}", id);
 
-        if (id > 2)
-            return;
+        if (id > 2) return;
 
         JSONObject output = new JSONObject();
 
@@ -47,5 +47,4 @@ public class RiseServerEndpoint {
 
         session.getAsyncRemote().sendText(output.toString());
     }
-
 }

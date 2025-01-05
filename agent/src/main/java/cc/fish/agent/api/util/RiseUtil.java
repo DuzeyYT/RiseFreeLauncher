@@ -18,25 +18,29 @@ public class RiseUtil implements Opcodes {
         for (MethodNode methodNode : classNode.methods)
             for (AbstractInsnNode abstractInsnNode : methodNode.instructions)
                 if (abstractInsnNode instanceof MethodInsnNode methodInsnNode
-                        && methodInsnNode.owner.equals("org/glassfish/tyrus/client/ClientManager") && methodInsnNode.name.equals("connectToServer")
-                        && abstractInsnNode.getPrevious() instanceof MethodInsnNode previousMethodInsnNode && previousMethodInsnNode.owner.equals("java/net/URI")
-                        && previousMethodInsnNode.name.equals("create"))
-                    return methodNode;
+                        && methodInsnNode.owner.equals("org/glassfish/tyrus/client/ClientManager")
+                        && methodInsnNode.name.equals("connectToServer")
+                        && abstractInsnNode.getPrevious()
+                                instanceof MethodInsnNode previousMethodInsnNode
+                        && previousMethodInsnNode.owner.equals("java/net/URI")
+                        && previousMethodInsnNode.name.equals("create")) return methodNode;
 
         return null;
     }
 
     public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
-        //JOptionPane.showMessageDialog(null, "Found WSC class: " + wscClass.name);
+        // JOptionPane.showMessageDialog(null, "Found WSC class: " + wscClass.name);
 
         for (MethodNode methodNode : wscClass.methods) {
             for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
                 if (abstractInsnNode instanceof MethodInsnNode methodInsnNode
-                        && methodInsnNode.owner.equals("javax/websocket/RemoteEndpoint$Async") && methodInsnNode.name.equals("sendText")
-                        && abstractInsnNode.getPrevious() instanceof MethodInsnNode previousMethodInsnNode) {
+                        && methodInsnNode.owner.equals("javax/websocket/RemoteEndpoint$Async")
+                        && methodInsnNode.name.equals("sendText")
+                        && abstractInsnNode.getPrevious()
+                                instanceof MethodInsnNode previousMethodInsnNode) {
 
                     String className = previousMethodInsnNode.owner.replace("/", ".");
-                    //JOptionPane.showMessageDialog(null, "Found class: " + className);
+                    // JOptionPane.showMessageDialog(null, "Found class: " + className);
                     try {
                         Class<?> clazz = loader.loadClass(className);
                         for (Field field : clazz.getDeclaredFields()) {
@@ -46,7 +50,8 @@ public class RiseUtil implements Opcodes {
                             }
                         }
                     } catch (Exception e) {
-                        JOptionPane.showConfirmDialog(null, "Failed to extract encryption key: " + e.getMessage());
+                        JOptionPane.showConfirmDialog(
+                                null, "Failed to extract encryption key: " + e.getMessage());
                         System.exit(1);
                     }
                 }
@@ -58,7 +63,9 @@ public class RiseUtil implements Opcodes {
 
     public boolean replaceURI(MethodNode methodNode) {
         for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
-            if (abstractInsnNode instanceof MethodInsnNode methodInsnNode && methodInsnNode.owner.equals("java/net/URI") && methodInsnNode.name.equals("create")) {
+            if (abstractInsnNode instanceof MethodInsnNode methodInsnNode
+                    && methodInsnNode.owner.equals("java/net/URI")
+                    && methodInsnNode.name.equals("create")) {
                 methodNode.instructions.remove(abstractInsnNode.getPrevious());
                 InsnList insnList = new InsnList();
                 insnList.add(new LdcInsnNode("ws://localhost:8443"));

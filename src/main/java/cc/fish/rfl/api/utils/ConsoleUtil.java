@@ -18,21 +18,26 @@ public class ConsoleUtil {
     }
 
     public String getCustomArt(String text, String font) {
-        if (font == null || font.isEmpty())
-            font = "ogre";
+        if (font == null || font.isEmpty()) font = "ogre";
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) URI.create(
-                    String.format("http://www.network-science.de/ascii/ascii.php?TEXT=%s&x=31&y=5&FONT=%s&RICH=no&FORM=left&STRE=no&WIDT=2000",
-                            text.replace(" ", "+"), font)
-            ).toURL().openConnection();
+            HttpURLConnection connection =
+                    (HttpURLConnection)
+                            URI.create(
+                                            String.format(
+                                                    "http://www.network-science.de/ascii/ascii.php?TEXT=%s&x=31&y=5&FONT=%s&RICH=no&FORM=left&STRE=no&WIDT=2000",
+                                                    text.replace(" ", "+"), font))
+                                    .toURL()
+                                    .openConnection();
 
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
             String response = DownloadUtil.readInputStream(connection.getInputStream());
 
-            return response.substring(response.indexOf("<TR><TD><PRE>") + 13, response.indexOf("</PRE><!-- white text and background :) /!-->"));
+            return response.substring(
+                    response.indexOf("<TR><TD><PRE>") + 13,
+                    response.indexOf("</PRE><!-- white text and background :) /!-->"));
         } catch (IOException e) {
             return "Error while getting custom ASCII art, maybe the font is not supported?";
         }
@@ -45,7 +50,8 @@ public class ConsoleUtil {
             String[] commandParts = command.split(" ");
             process = runtime.exec(commandParts);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
             reader.close();
 
             process.waitFor();
