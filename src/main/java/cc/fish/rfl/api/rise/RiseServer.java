@@ -25,6 +25,8 @@ public class RiseServer {
     public static final int PORT = 8443;
 
     public static String encryptionKey;
+    public static boolean loggedIn;
+    public static long lastKeepAlive;
 
     public void startServer() {
         // create temporary socket for the agent to give us the encryption key
@@ -53,7 +55,7 @@ public class RiseServer {
             LOGGER.info("backend running on port {}", PORT);
 
             // keep the retarded server alive
-            while (true) {
+            while (!loggedIn || (System.currentTimeMillis() - lastKeepAlive) < 1000 * 20) {
                 Thread.sleep(100);
             }
         } catch (Exception e) {

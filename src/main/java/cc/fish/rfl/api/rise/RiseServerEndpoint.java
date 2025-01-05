@@ -34,12 +34,15 @@ public class RiseServerEndpoint {
 
         output.put("id", id);
 
+        RiseServer.lastKeepAlive = System.currentTimeMillis();
+
         if (id == 1) {
             output.put("a", true);
             output.put("b", Math.PI);
             output.put("c", 90.0f);
             output.put("d", System.currentTimeMillis());
             output.put("e", "Hello, World!");
+            RiseServer.loggedIn = true;
         }
         if (id == 2) {
             output.put("a", RiseConfigConverter.convert(jsonObject.getString("a")));
