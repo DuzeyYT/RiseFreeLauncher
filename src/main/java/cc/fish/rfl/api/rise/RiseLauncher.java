@@ -14,7 +14,7 @@ public class RiseLauncher {
         LOGGER.info("Launching Rise...");
 
         ConsoleUtil.runCommand(
-                "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path=rise-natives -cp compressed.jar Start");
+                "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path=\"" + RiseUpdater.NATIVE_PATH + "\" -cp \"" + RiseUpdater.COMPRESSED_PATH + "\" " +  "Start");
 
         // try {
         //    ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",

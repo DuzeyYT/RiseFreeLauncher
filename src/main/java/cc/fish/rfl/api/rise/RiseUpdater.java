@@ -31,10 +31,10 @@ public class RiseUpdater {
     public final String CLIENT_HASH_URL =
             "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt";
 
-    public final String CLIENT_PATH = "client.jar";
-    public final String NATIVE_PATH = "rise-natives";
-    public final String LIBRARY_PATH = "libraries.jar";
-    public final String COMPRESSED_PATH = "compressed.jar";
+    public final String CLIENT_PATH = "files/client.jar";
+    public final String NATIVE_PATH = "files/rise-natives";
+    public final String LIBRARY_PATH = "files/libraries.jar";
+    public final String COMPRESSED_PATH = "files/compressed.jar";
     public final String AGENT_PATH = "agent.jar";
 
     public void checkAndUpdate() {
@@ -182,7 +182,7 @@ public class RiseUpdater {
     public String getFileHash(String filePath) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            try (FileInputStream fis = new FileInputStream(filePath); ) {
+            try (FileInputStream fis = new FileInputStream(filePath)) {
                 int bytesCount;
                 byte[] byteArray = new byte[1024];
                 while ((bytesCount = fis.read(byteArray)) != -1) {

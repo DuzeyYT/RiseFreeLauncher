@@ -1,5 +1,4 @@
-# Rise Free Launcher
- Rise for free 🤑🤑🙏👌
+![Rise](media/rise.png)
 
 ---
 

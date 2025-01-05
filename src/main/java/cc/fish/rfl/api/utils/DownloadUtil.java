@@ -29,8 +29,11 @@ public class DownloadUtil {
 
     public void downloadFile(String url, String destination) {
         try {
+            File file = new File(destination);
+            boolean created = file.getParentFile().mkdirs();
+
             BufferedInputStream in = new BufferedInputStream(URI.create(url).toURL().openStream());
-            FileOutputStream fileOutputStream = new FileOutputStream(destination);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
             BufferedOutputStream out = new BufferedOutputStream(fileOutputStream, 1024);
             byte[] data = new byte[1024];
             int count;
