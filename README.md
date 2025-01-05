@@ -31,9 +31,10 @@
 ```java -jar launcher.jar```
 3. Enjoy!
 
-## How to launch with updating
-Launch the launcher with the following command<br>
+## How to launch without auto updater
+1. Launch the launcher with the following command<br>
 ```java -jar launcher.jar --no-update```<br>
+
 ---
 
 ## Credits
