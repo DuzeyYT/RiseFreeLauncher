@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @UtilityClass
 public class RiseUtil implements Opcodes {
@@ -28,7 +27,7 @@ public class RiseUtil implements Opcodes {
     }
 
     public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
-//        JOptionPane.showMessageDialog(null, "Found WSC class: " + wscClass.name);
+        //JOptionPane.showMessageDialog(null, "Found WSC class: " + wscClass.name);
 
         for (MethodNode methodNode : wscClass.methods) {
             for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
@@ -37,7 +36,7 @@ public class RiseUtil implements Opcodes {
                         && abstractInsnNode.getPrevious() instanceof MethodInsnNode previousMethodInsnNode) {
 
                     String className = previousMethodInsnNode.owner.replace("/", ".");
-//                    JOptionPane.showMessageDialog(null, "Found class: " + className);
+                    //JOptionPane.showMessageDialog(null, "Found class: " + className);
                     try {
                         Class<?> clazz = loader.loadClass(className);
                         for (Field field : clazz.getDeclaredFields()) {
@@ -47,7 +46,7 @@ public class RiseUtil implements Opcodes {
                             }
                         }
                     } catch (Exception e) {
-//                        JOptionPane.showConfirmDialog(null, "Failed to extract encryption key: " + e.getMessage());
+                        JOptionPane.showConfirmDialog(null, "Failed to extract encryption key: " + e.getMessage());
                         System.exit(1);
                     }
                 }
