@@ -19,13 +19,27 @@ public class RflMain {
     public static final Logger LOGGER = LogManager.getLogger("RFL");
 
     public void start(String[] args) {
+        boolean noUpdate = false;
+        boolean shouldDebugPackets = false;
+
+        for (String arg : args) {
+            if (arg.equals("--no-update"))
+                noUpdate = true;
+            if (arg.equals("--debug-packets"))
+                shouldDebugPackets = true;
+        }
+
+        // für cool und so
+        ConsoleUtil.clearConsole();
+        ConsoleUtil.emptyLine();
+
         System.out.println(ConsoleUtil.getCustomArt("RISE FREE LAUNCHER", null));
 
         LOGGER.info("Welcome to Rise Free Launcher!");
         ConsoleUtil.emptyLine();
 
         // add option to disable auto updates in case this has been patched.
-        if (args.length == 0 || !args[0].equals("--no-update")) {
+        if (!noUpdate) {
             RiseUpdater.checkAndUpdate();
             ConsoleUtil.emptyLine();
         }
@@ -34,7 +48,7 @@ public class RflMain {
         new Thread(RiseLauncher::launch).start();
 
         LOGGER.info("Starting Emulated Rise Server...");
-        new RiseServer().startServer();
+        new RiseServer().startServer(shouldDebugPackets);
 
         LOGGER.info("Thank you for using Rise Free Launcher!");
     }

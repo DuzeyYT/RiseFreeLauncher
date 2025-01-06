@@ -17,8 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("LoggingSimilarMessage")
-@Getter
-@Setter
+@Getter @Setter
 public class RiseServer {
 
     public static final Logger LOGGER = LogManager.getLogger("Rise Server");
@@ -27,8 +26,11 @@ public class RiseServer {
     public static String encryptionKey;
     public static boolean loggedIn;
     public static long lastKeepAlive;
+    public static boolean shouldDebugPackets;
 
-    public void startServer() {
+    public void startServer(boolean shouldDebugPackets) {
+        RiseServer.shouldDebugPackets = shouldDebugPackets;
+
         // create temporary socket for the agent to give us the encryption key
         new Thread(
                         () -> {

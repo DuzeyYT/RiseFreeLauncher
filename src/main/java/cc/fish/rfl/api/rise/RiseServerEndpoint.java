@@ -26,7 +26,8 @@ public class RiseServerEndpoint {
 
         int id = jsonObject.getInt("id");
 
-        RiseServer.LOGGER.info("Received message with id: {}", id);
+        if (RiseServer.shouldDebugPackets)
+            RiseServer.LOGGER.info("Received message with data: {}", jsonObject.toString());
 
         if (id > 2) return;
 
@@ -43,6 +44,8 @@ public class RiseServerEndpoint {
             output.put("d", System.currentTimeMillis());
             output.put("e", "Hello, World!");
             RiseServer.loggedIn = true;
+
+            RiseServer.LOGGER.info("Client logged in successfully. Have fun!");
         }
         if (id == 2) {
             output.put("a", RiseConfigConverter.convert(jsonObject.getString("a")));

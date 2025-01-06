@@ -1,6 +1,7 @@
 package cc.fish.rfl.api.rise;
 
 import cc.fish.rfl.api.utils.DownloadUtil;
+import cc.fish.rfl.api.utils.OsUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.OperatingSystemMXBean;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -117,11 +119,18 @@ public class RiseUpdater {
     }
 
     private void extractNatives() {
+        OsUtil.OS os = OsUtil.getOs();
+
+        if (os == null) {
+            LOGGER.error("Unsupported Operating System");
+            return;
+        }
+
         Map<String, byte[]> nativeDll = new HashMap<>();
 
         try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
             for (ZipEntry entry : libraryZip.stream().toList()) {
-                if (!entry.getName().endsWith(".dll") || entry.getName().contains("/")) continue;
+                if (!entry.getName().endsWith("." + os.getNativeExtension()) || entry.getName().contains("/")) continue;
 
                 nativeDll.put(entry.getName(), libraryZip.getInputStream(entry).readAllBytes());
             }

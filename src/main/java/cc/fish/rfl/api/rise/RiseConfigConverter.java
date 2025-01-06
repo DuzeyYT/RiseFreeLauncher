@@ -21,15 +21,13 @@ public class RiseConfigConverter {
             if (moduleObject.has("state"))
                 stringBuilder
                         .append(module)
-                        .append("_")
-                        .append("e1_")
+                        .append("_e1_")
                         .append(moduleObject.getBoolean("state"))
                         .append("\n");
             if (moduleObject.has("keyCode"))
                 stringBuilder
                         .append(module)
-                        .append("_")
-                        .append("kc_")
+                        .append("_kc_")
                         .append(moduleObject.getInt("keyCode"))
                         .append("\n");
 
