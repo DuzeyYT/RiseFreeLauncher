@@ -45,7 +45,7 @@ public class RflMain {
         }
 
         LOGGER.info("Starting Rise Client for Free...");
-        new Thread(RiseLauncher::launch).start();
+        new Thread(RiseLauncher::launch, "rise").start();
 
         LOGGER.info("Starting Emulated Rise Server...");
         new RiseServer().startServer(shouldDebugPackets);

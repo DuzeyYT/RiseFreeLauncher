@@ -47,7 +47,7 @@ public class RiseServer {
                             } catch (Exception e) {
                                 LOGGER.error("Failed to start server: {}", e.getMessage());
                             }
-                        })
+                        }, "agent")
                 .start();
 
         try {

@@ -139,7 +139,7 @@ public class RiseUpdater {
         }
 
         if (nativeDll.isEmpty()) {
-            LOGGER.error("No native DLLs found in client");
+            LOGGER.error("No natives found in client");
             return;
         }
 
@@ -152,7 +152,7 @@ public class RiseUpdater {
                 FileUtils.writeByteArrayToFile(nativeFile, entry.getValue());
             }
 
-            LOGGER.info("Native DLLs extracted successfully");
+            LOGGER.info("Natives for {} extracted successfully", os.name().toLowerCase());
         } catch (IOException e) {
             LOGGER.error("Failed to update client", e);
         }
