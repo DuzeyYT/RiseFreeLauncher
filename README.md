@@ -24,7 +24,8 @@
 > Please check the Discord server after updates to see if this still works/is safe to use.<br>
 
 ## Requirements
-- Windows 10+ (this currently only works on Windows)
+- ~~Windows 10+ (this currently only works on Windows)~~ 
+- This works on Windows, Linux and MacOS. (Tested on Windows 10/11 and Linux Mint 22. MacOS should work too)
 - [Java 21+](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 
 ## How to use
