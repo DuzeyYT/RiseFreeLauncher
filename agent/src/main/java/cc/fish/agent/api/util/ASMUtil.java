@@ -53,4 +53,22 @@ public class ASMUtil {
 
         return new AbstractInsnNode[] { start, end };
     }
+
+    public MethodNode findMethod(ClassNode classNode, String name, String desc) {
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.name.equals(name) && methodNode.desc.equals(desc)) return methodNode;
+        }
+        return null;
+    }
+
+    public boolean isStringInClass(ClassNode classNode, String string) {
+        for (MethodNode methodNode : classNode.methods) {
+            for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
+                if (abstractInsnNode instanceof LdcInsnNode ldcInsnNode
+                        && ldcInsnNode.cst instanceof String
+                        && ldcInsnNode.cst.equals(string)) return true;
+            }
+        }
+        return false;
+    }
 }

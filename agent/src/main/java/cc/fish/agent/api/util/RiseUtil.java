@@ -29,39 +29,33 @@ public class RiseUtil implements Opcodes {
     }
 
     public boolean isLoginScreenClass(ClassNode classNode) {
-        return classNode.name.equals("hackclient/rise/xz");
+        return ASMUtil.isStringInClass(classNode, "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version");
     }
 
     public boolean patchLoginScreen(ClassNode classNode) {
-        MethodNode loginGuiLambda = RiseUtil.isLoginGuiLambda(classNode);
+        MethodNode loginGuiLambda = ASMUtil.findMethod(classNode, "c", "(Lnet/minecraft/client/gui/cz;)V");
         if (loginGuiLambda != null) {
             AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiLambda, "hackclient/rise/aac.hS()V");
             if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
                 ASMUtil.deleteInsnBetween(loginGuiLambda, usernameField[0], usernameField[1]);
         }
 
-        MethodNode loginGuiDrawScreenMethod = RiseUtil.isLoginGuiDrawScreen(classNode);
+        MethodNode loginGuiDrawScreenMethod = ASMUtil.findMethod(classNode, "drawScreen", "(IIF)V");
         if (loginGuiDrawScreenMethod != null) {
             AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiDrawScreenMethod, "hackclient/rise/xn.b(IIF)V");
             if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
                 ASMUtil.deleteInsnBetween(loginGuiDrawScreenMethod, usernameField[0], usernameField[1]);
         }
 
-        MethodNode loginMethod = RiseUtil.findLoginMethod(classNode);
+        MethodNode loginMethod = ASMUtil.findMethod(classNode, "x", "(Ljava/lang/String;)V");
         if (loginMethod != null)
             RiseUtil.patchLoginMethod(loginMethod);
 
+        MethodNode initGuiMethod = ASMUtil.findMethod(classNode, "initGui", "()V");
+        if (initGuiMethod != null)
+            RiseUtil.patchInitGuiMethod(initGuiMethod);
+
         return loginGuiLambda != null || loginGuiDrawScreenMethod != null || loginMethod != null;
-    }
-
-    public MethodNode findLoginMethod(ClassNode classNode) {
-        if (!classNode.name.equals("hackclient/rise/xz")) return null;
-
-        for (MethodNode methodNode : classNode.methods) {
-            if (methodNode.name.equals("x") && methodNode.desc.equals("(Ljava/lang/String;)V"))
-                return methodNode;
-        }
-        return null;
     }
 
     public void patchLoginMethod(MethodNode methodNode) {
@@ -76,20 +70,23 @@ public class RiseUtil implements Opcodes {
         }
     }
 
-    public MethodNode isLoginGuiLambda(ClassNode classNode) {
-        if (!classNode.name.equals("hackclient/rise/xz")) return null;
-        for (MethodNode methodNode : classNode.methods)
-            if (methodNode.name.equals("c") && methodNode.desc.equals("(Lnet/minecraft/client/gui/cz;)V"))
-                return methodNode;
-        return null;
-    }
+    public void patchInitGuiMethod(MethodNode methodNode) {
 
-    public MethodNode isLoginGuiDrawScreen(ClassNode classNode) {
-        if (!classNode.name.equals("hackclient/rise/xz")) return null;
-        for (MethodNode methodNode : classNode.methods)
-            if (methodNode.name.equals("drawScreen") && methodNode.desc.equals("(IIF)V"))
-                return methodNode;
-        return null;
+        /* what happens when login button is pressed:
+        ALOAD this
+        ALOAD this
+        GETFIELD hackclient/rise/xz.ZM Lhackclient/rise/aac;
+        INVOKEVIRTUAL hackclient/rise/aac.jq()Ljava/lang/String;
+        INVOKEVIRTUAL hackclient/rise/xz.x(Ljava/lang/String;)V
+         */
+
+        InsnList insnList = new InsnList();
+
+        insnList.add(new VarInsnNode(ALOAD, 0));
+        insnList.add(new LdcInsnNode("anal woods"));
+        insnList.add(new MethodInsnNode(INVOKEVIRTUAL, "hackclient/rise/xz", "x", "(Ljava/lang/String;)V", false));
+
+        methodNode.instructions.insert(methodNode.instructions.getFirst(), insnList);
     }
 
     public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
