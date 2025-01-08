@@ -13,7 +13,7 @@ public class RiseLauncher {
     public void launch(boolean mcOutput) {
         LOGGER.info("Launching Rise...");
 
-        if (!mcOutput){
+        if (!mcOutput) {
             ConsoleUtil.runCommand(
                     "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path="
                             + RiseUpdater.NATIVE_PATH

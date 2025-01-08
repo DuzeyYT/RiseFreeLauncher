@@ -5,6 +5,7 @@ import cc.fish.rfl.api.rise.RiseLauncher;
 import cc.fish.rfl.api.rise.RiseServer;
 import cc.fish.rfl.api.rise.RiseUpdater;
 import cc.fish.rfl.api.utils.ConsoleUtil;
+import cc.fish.rfl.api.utils.OptionParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -19,18 +20,7 @@ public class RflMain {
     public static final Logger LOGGER = LogManager.getLogger("RFL");
 
     public void start(String[] args) {
-        boolean noUpdate = false;
-        boolean shouldDebugPackets = false;
-        boolean enableMinecraftOutput = false;
-
-        for (String arg : args) {
-            if (arg.equals("--no-update"))
-                noUpdate = true;
-            if (arg.equals("--debug-packets"))
-                shouldDebugPackets = true;
-            if (arg.equals("--enable-mc-output"))
-                enableMinecraftOutput = true;
-        }
+        OptionParser optionParser = new OptionParser(args);
 
         // für cool und so
         ConsoleUtil.clearConsole();
@@ -42,17 +32,16 @@ public class RflMain {
         ConsoleUtil.emptyLine();
 
         // add option to disable auto updates in case this has been patched.
-        if (!noUpdate) {
+        if (!optionParser.isEnabled("no-update")) {
             RiseUpdater.checkAndUpdate();
             ConsoleUtil.emptyLine();
         }
 
         LOGGER.info("Starting Rise Client for Free...");
-        boolean finalEnableMinecraftOutput = enableMinecraftOutput;
-        new Thread(() -> RiseLauncher.launch(finalEnableMinecraftOutput), "rise").start();
+        new Thread(() -> RiseLauncher.launch(optionParser.isEnabled("enable-mc-output")), "rise").start();
 
         LOGGER.info("Starting Emulated Rise Server...");
-        new RiseServer().startServer(shouldDebugPackets);
+        new RiseServer().startServer(optionParser.isEnabled("debug-packets"));
 
         LOGGER.info("Thank you for using Rise Free Launcher!");
     }

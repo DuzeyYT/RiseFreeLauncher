@@ -34,9 +34,12 @@
 ```java -jar launcher.jar```
 3. Enjoy!
 
-## How to launch without auto updater
-1. Launch the launcher with the following command<br>
-```java -jar launcher.jar --no-update```<br>
+## Launch options
+- You can use the following launch options:
+  - ```--no-update``` - Disables the auto updater for rise incase they patch it
+  - ```--debug-packets``` - Enables packet debugging for rise backend packets
+  - ```--enable-mc-output``` - Enables the Minecraft output in the console
+- Example: ```java -jar launcher.jar --no-update --debug-packets --enable-mc-output```
 
 ---
 
