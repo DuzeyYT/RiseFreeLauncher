@@ -10,24 +10,27 @@ public class RiseLauncher {
 
     public final Logger LOGGER = LogManager.getLogger("Rise Launcher");
 
-    public void launch() {
+    public void launch(boolean mcOutput) {
         LOGGER.info("Launching Rise...");
 
-        ConsoleUtil.runCommand(
-                "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path="
-                        + RiseUpdater.NATIVE_PATH
-                        + " -cp "
-                        + RiseUpdater.COMPRESSED_PATH
-                        + " Start");
+        if (!mcOutput){
+            ConsoleUtil.runCommand(
+                    "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path="
+                            + RiseUpdater.NATIVE_PATH
+                            + " -cp "
+                            + RiseUpdater.COMPRESSED_PATH
+                            + " Start");
+            return;
+        }
 
-        // try {
-        //   ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",
-        // "-XX:+DisableAttachMechanism", "-noverify", "-Djava.library.path=rise-natives", "-cp",
-        // "compressed.jar", "Start");
-        //   processBuilder.inheritIO();
-        //   processBuilder.start();
-        // } catch (Exception e) {
-        //   LOGGER.error("Failed to launch Rise: {}", e.getMessage());
-        // }
+         try {
+           ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",
+                   "-XX:+DisableAttachMechanism", "-noverify",
+                   "-Djava.library.path=" + RiseUpdater.NATIVE_PATH, "-cp", RiseUpdater.COMPRESSED_PATH, "Start");
+           processBuilder.inheritIO();
+           processBuilder.start();
+         } catch (Exception e) {
+           LOGGER.error("Failed to launch Rise: {}", e.getMessage());
+         }
     }
 }

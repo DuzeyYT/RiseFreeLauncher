@@ -21,12 +21,15 @@ public class RflMain {
     public void start(String[] args) {
         boolean noUpdate = false;
         boolean shouldDebugPackets = false;
+        boolean enableMinecraftOutput = false;
 
         for (String arg : args) {
             if (arg.equals("--no-update"))
                 noUpdate = true;
             if (arg.equals("--debug-packets"))
                 shouldDebugPackets = true;
+            if (arg.equals("--enable-mc-output"))
+                enableMinecraftOutput = true;
         }
 
         // für cool und so
@@ -45,7 +48,8 @@ public class RflMain {
         }
 
         LOGGER.info("Starting Rise Client for Free...");
-        new Thread(RiseLauncher::launch, "rise").start();
+        boolean finalEnableMinecraftOutput = enableMinecraftOutput;
+        new Thread(() -> RiseLauncher.launch(finalEnableMinecraftOutput), "rise").start();
 
         LOGGER.info("Starting Emulated Rise Server...");
         new RiseServer().startServer(shouldDebugPackets);
