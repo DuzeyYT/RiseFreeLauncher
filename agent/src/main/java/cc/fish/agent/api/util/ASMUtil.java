@@ -40,7 +40,7 @@ public class ASMUtil {
                 if (varInsnNode.var == 0) start = abstractInsnNode;
             }
 
-            if (abstractInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL
+            if (start != null && abstractInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL
                     && abstractInsnNode instanceof MethodInsnNode methodInsnNode) {
                 if (name.equals(methodInsnNode.owner + "." + methodInsnNode.name + methodInsnNode.desc)) {
                     end = abstractInsnNode;

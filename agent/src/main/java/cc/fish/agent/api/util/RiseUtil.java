@@ -21,7 +21,7 @@ public class RiseUtil implements Opcodes {
                         && methodInsnNode.owner.equals("org/glassfish/tyrus/client/ClientManager")
                         && methodInsnNode.name.equals("connectToServer")
                         && abstractInsnNode.getPrevious()
-                                instanceof MethodInsnNode previousMethodInsnNode
+                        instanceof MethodInsnNode previousMethodInsnNode
                         && previousMethodInsnNode.owner.equals("java/net/URI")
                         && previousMethodInsnNode.name.equals("create")) return methodNode;
 
@@ -35,42 +35,47 @@ public class RiseUtil implements Opcodes {
     public boolean patchLoginScreen(ClassNode classNode) {
         MethodNode loginGuiLambda = ASMUtil.findMethod(classNode, "c", "(Lnet/minecraft/client/gui/cz;)V");
         if (loginGuiLambda != null) {
-            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiLambda, "hackclient/rise/aac.hS()V");
-            if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
+            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiLambda, "hackclient/rise/aad.hU()V");
+            if (usernameField != null && usernameField[0] != null && usernameField[1] != null)
                 ASMUtil.deleteInsnBetween(loginGuiLambda, usernameField[0], usernameField[1]);
         }
 
         MethodNode loginGuiDrawScreenMethod = ASMUtil.findMethod(classNode, "drawScreen", "(IIF)V");
         if (loginGuiDrawScreenMethod != null) {
-            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiDrawScreenMethod, "hackclient/rise/xn.b(IIF)V");
-            if (usernameField!=null && usernameField[0]!=null && usernameField[1]!=null)
+            AbstractInsnNode[] usernameField = ASMUtil.findThisCall(loginGuiDrawScreenMethod, "hackclient/rise/xo.b(IIF)V");
+            if (usernameField != null && usernameField[0] != null && usernameField[1] != null)
                 ASMUtil.deleteInsnBetween(loginGuiDrawScreenMethod, usernameField[0], usernameField[1]);
         }
 
         MethodNode loginMethod = ASMUtil.findMethod(classNode, "x", "(Ljava/lang/String;)V");
-        if (loginMethod != null)
+        if (loginMethod != null) {
             RiseUtil.patchLoginMethod(loginMethod);
 
-        MethodNode initGuiMethod = ASMUtil.findMethod(classNode, "initGui", "()V");
-        if (initGuiMethod != null)
-            RiseUtil.patchInitGuiMethod(initGuiMethod);
+            MethodNode initGuiMethod = ASMUtil.findMethod(classNode, "initGui", "()V");
+            if (initGuiMethod != null)
+                RiseUtil.patchInitGuiMethod(classNode, initGuiMethod);
+        }
 
         return loginGuiLambda != null || loginGuiDrawScreenMethod != null || loginMethod != null;
     }
 
     public void patchLoginMethod(MethodNode methodNode) {
+        int returns = 0;
         for (AbstractInsnNode abstractInsnNode : methodNode.instructions) {
-            if (abstractInsnNode.getOpcode() == Opcodes.ALOAD
+            if (abstractInsnNode.getOpcode() == ALOAD
                     && abstractInsnNode instanceof VarInsnNode varInsnNode
                     && varInsnNode.var == 1) {
                 methodNode.instructions.insertBefore(abstractInsnNode, new LdcInsnNode("anal woods"));
                 methodNode.instructions.remove(abstractInsnNode);
-                break;
+            }
+
+            if (abstractInsnNode.getOpcode() == RETURN && returns++ == 1) {
+                methodNode.instructions.remove(abstractInsnNode);
             }
         }
     }
 
-    public void patchInitGuiMethod(MethodNode methodNode) {
+    public void patchInitGuiMethod(ClassNode clasNode, MethodNode methodNode) {
 
         /* what happens when login button is pressed:
         ALOAD this
@@ -84,9 +89,9 @@ public class RiseUtil implements Opcodes {
 
         insnList.add(new VarInsnNode(ALOAD, 0));
         insnList.add(new LdcInsnNode("anal woods"));
-        insnList.add(new MethodInsnNode(INVOKEVIRTUAL, "hackclient/rise/xz", "x", "(Ljava/lang/String;)V", false));
+        insnList.add(new MethodInsnNode(INVOKEVIRTUAL, clasNode.name, "x", "(Ljava/lang/String;)V", false));
 
-        methodNode.instructions.insert(methodNode.instructions.getFirst(), insnList);
+        methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnList);
     }
 
     public String extractEncryptionKey(ClassLoader loader, ClassNode wscClass) {
@@ -96,7 +101,7 @@ public class RiseUtil implements Opcodes {
                         && methodInsnNode.owner.equals("javax/websocket/RemoteEndpoint$Async")
                         && methodInsnNode.name.equals("sendText")
                         && abstractInsnNode.getPrevious()
-                                instanceof MethodInsnNode previousMethodInsnNode) {
+                        instanceof MethodInsnNode previousMethodInsnNode) {
 
                     String className = previousMethodInsnNode.owner.replace("/", ".");
                     try {

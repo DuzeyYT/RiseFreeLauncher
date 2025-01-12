@@ -130,6 +130,7 @@ public class RiseUpdater {
 
         try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
             for (ZipEntry entry : libraryZip.stream().toList()) {
+                System.out.println(entry.getName());
                 if (!entry.getName().endsWith("." + os.getNativeExtension()) || entry.getName().contains("/")) continue;
 
                 nativeDll.put(entry.getName(), libraryZip.getInputStream(entry).readAllBytes());
