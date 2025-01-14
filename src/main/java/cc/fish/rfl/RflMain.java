@@ -32,10 +32,8 @@ public class RflMain {
         ConsoleUtil.emptyLine();
 
         // add option to disable auto updates in case this has been patched.
-        if (!optionParser.isEnabled("no-update")) {
-            RiseUpdater.checkAndUpdate();
-            ConsoleUtil.emptyLine();
-        }
+        RiseUpdater.checkAndUpdate(optionParser.isEnabled("no-update"));
+        ConsoleUtil.emptyLine();
 
         LOGGER.info("Starting Rise Client for Free...");
         new Thread(() -> RiseLauncher.launch(optionParser.isEnabled("enable-mc-output")), "rise").start();

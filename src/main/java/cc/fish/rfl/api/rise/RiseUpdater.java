@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +27,22 @@ import java.util.zip.ZipOutputStream;
 public class RiseUpdater {
     public final Logger LOGGER = LogManager.getLogger("Rise Updater");
 
-    public final String RISE_LATEST_VERSION_URL =
-            "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version";
-    public final String RISE_LIBRARY_HASH_URL =
-            "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries_Hash.txt";
-    public final String CLIENT_HASH_URL =
-            "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt";
+    public JSONObject URLS;
+
+    static {
+        try {
+            URLS = new JSONObject(FileUtils.readFileToString(new File("urls.json")));
+        } catch (IOException e) {
+            LOGGER.info("Failed to read urls.json, using default URLs");
+
+            URLS = new JSONObject();
+            URLS.put("version", "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version");
+            URLS.put("client", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar");
+            URLS.put("client-hash", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt");
+            URLS.put("libraries", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar");
+            URLS.put("libraries-hash", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries_Hash.txt");
+        }
+    }
 
     public final String CLIENT_PATH = "files/client.jar";
     public final String NATIVE_PATH = "files/rise-natives";
@@ -39,9 +50,9 @@ public class RiseUpdater {
     public final String COMPRESSED_PATH = "files/compressed.jar";
     public final String AGENT_PATH = "agent.jar";
 
-    public void checkAndUpdate() {
+    public void checkAndUpdate(boolean noUpdate) {
         LOGGER.info("Checking for client updates...");
-        String latestVersion = DownloadUtil.readFromWeb(RISE_LATEST_VERSION_URL);
+        String latestVersion = DownloadUtil.readFromWeb(URLS.getString("version"));
         LOGGER.info("(Latest version: {})", latestVersion);
 
         File agentFile = new File(AGENT_PATH);
@@ -52,26 +63,31 @@ public class RiseUpdater {
         }
 
         try {
-            String clientHash = DownloadUtil.readFromWeb(CLIENT_HASH_URL);
-            String libraryHash = DownloadUtil.readFromWeb(RISE_LIBRARY_HASH_URL);
+            if (!noUpdate) {
+                String clientHash = DownloadUtil.readFromWeb(URLS.getString("client-hash"));
+                String libraryHash = DownloadUtil.readFromWeb(URLS.getString("libraries-hash"));
 
-            if (clientHash == null || libraryHash == null) {
-                LOGGER.error("Failed to get hashes from the server");
-                return;
-            }
+                if (clientHash == null || libraryHash == null) {
+                    LOGGER.error("Failed to get hashes from the server");
+                    return;
+                }
 
-            String clientLocalHash = getFileHash(CLIENT_PATH);
-            String libraryLocalHash = getFileHash(LIBRARY_PATH);
+                String clientLocalHash = getFileHash(CLIENT_PATH);
+                String libraryLocalHash = getFileHash(LIBRARY_PATH);
 
-            if (clientLocalHash == null || libraryLocalHash == null) {
-                LOGGER.info("Client files not found, downloading...");
-                updateFiles(false);
-                return;
-            }
+                if (clientLocalHash == null || libraryLocalHash == null) {
+                    LOGGER.info("Client files not found, downloading...");
+                    updateFiles(false);
+                    return;
+                }
 
-            if (!clientHash.equals(clientLocalHash) || !libraryHash.equals(libraryLocalHash)) {
-                LOGGER.info("Client update found, downloading...");
-                updateFiles(true);
+                if (!clientHash.equals(clientLocalHash) || !libraryHash.equals(libraryLocalHash)) {
+                    LOGGER.info("Client update found, downloading...");
+                    updateFiles(true);
+                    return;
+                }
+            } else if (!new File(CLIENT_PATH).exists() || !new File(LIBRARY_PATH).exists()) {
+                LOGGER.error("Client files not found, when running with --no-update, you must have the client files");
                 return;
             }
 
@@ -104,10 +120,10 @@ public class RiseUpdater {
             }
 
             DownloadUtil.downloadFile(
-                    "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar",
+                    URLS.getString("client"),
                     CLIENT_PATH);
             DownloadUtil.downloadFile(
-                    "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar",
+                    URLS.getString("libraries"),
                     LIBRARY_PATH);
             extractNatives();
             createCompressedFile();
