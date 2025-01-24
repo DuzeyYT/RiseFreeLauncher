@@ -6,10 +6,10 @@
 [![RFL Server](https://discord.com/api/guilds/1325264451141763113/widget.png?style=banner2)](https://discord.gg/jgjke4aCQQ)
 
 > [!NOTE]\
-> This is a fully open source and free launcher for [Rise](https://vantage.rip/#products)<br>
+> This is a fully open-source and free launcher for [Rise](https://vantage.rip/#products)<br>
 > This means that you can use this launcher to play with Rise for free, without paying for it.<br>
 > 
-> This launcher has a built-in auto updater, but when Rise updates they might fix this.<br>
+> This launcher has a built-in auto-updater, but when Rise updates they might fix this.<br>
 > We are trying our best to keep this updated, but we can't guarantee that it will work forever.<br>
 >
 > (Don't spam us if it doesn't work at the moment.)
@@ -36,7 +36,7 @@
 
 ## Launch options
 - You can use the following launch options:
-  - ```--no-update``` - Disables the auto updater for rise incase they patch it
+  - ```--no-update``` - Disables the auto-updater for rise incase they patch it
   - ```--debug-packets``` - Enables packet debugging for rise backend packets
   - ```--enable-mc-output``` - Enables the Minecraft output in the console
 - Example: ```java -jar launcher.jar --no-update --debug-packets --enable-mc-output```
