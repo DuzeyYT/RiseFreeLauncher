@@ -1,0 +1,7 @@
+{
+	"version": "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version",
+	"libraries": "https://gitlab.com/rise_update/rise-update/-/raw/main/Libraries.jar?ref_type=heads&inline=false",
+	"libraries-hash": "https://gitlab.com/rise_update/rise-update/-/raw/main/Libraries_Hash.txt?ref_type=heads&inline=false",
+	"client": "https://gitlab.com/rise_update/rise-update/-/raw/main/Standalone.jar?ref_type=heads&inline=false",
+	"client-hash": "https://gitlab.com/rise_update/rise-update/-/raw/main/Standalone_Hash.txt?ref_type=heads&inline=false"
+}
