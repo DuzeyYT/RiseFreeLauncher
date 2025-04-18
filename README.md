@@ -29,7 +29,7 @@
 - [Java 21+](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 
 ## How to use
-1. Download **agent.jar** and **launcher.jar** from the [releases page](https://github.com/DuzeyYT/RiseFreeLauncher/releases)
+1. Download **agent.jar**, **launcher.jar** and **urls.json** from the [releases page](https://github.com/DuzeyYT/RiseFreeLauncher/releases)
 2. Put them in the same directory and run **launcher.jar** with the following command<br>
 ```java -jar launcher.jar```
 3. Enjoy!
