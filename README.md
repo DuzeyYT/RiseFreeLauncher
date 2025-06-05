@@ -29,14 +29,14 @@
 - [Java 21+](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 
 ## How to use
-1. Download **agent.jar**, **launcher.jar** and **urls.json** from the [releases page](https://github.com/DuzeyYT/RiseFreeLauncher/releases)
+1. Download **agent.jar** and **launcher.jar** from the [releases page](https://github.com/DuzeyYT/RiseFreeLauncher/releases)
 2. Put them in the same directory and run **launcher.jar** with the following command<br>
 ```java -jar launcher.jar```
 3. Enjoy!
 
 ## Launch options
 - You can use the following launch options:
-  - ```--no-update``` - Disables the auto updater for rise incase they patch it
+  - ```--no-update``` - Disables the auto updater for rise incase this gets patched
   - ```--debug-packets``` - Enables packet debugging for rise backend packets
   - ```--enable-mc-output``` - Enables the Minecraft output in the console
 - Example: ```java -jar launcher.jar --no-update --debug-packets --enable-mc-output```
