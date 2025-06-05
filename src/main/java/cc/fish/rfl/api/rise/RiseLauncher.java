@@ -13,21 +13,12 @@ public class RiseLauncher {
     public void launch(boolean mcOutput) {
         LOGGER.info("Launching Rise...");
 
-        if (!mcOutput) {
-            ConsoleUtil.runCommand(
-                    "java -javaagent:agent.jar -XX:+DisableAttachMechanism -noverify -Djava.library.path="
-                            + RiseUpdater.NATIVE_PATH
-                            + " -cp "
-                            + RiseUpdater.COMPRESSED_PATH
-                            + " Start");
-            return;
-        }
-
          try {
            ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",
                    "-XX:+DisableAttachMechanism", "-noverify",
                    "-Djava.library.path=" + RiseUpdater.NATIVE_PATH, "-cp", RiseUpdater.COMPRESSED_PATH, "Start");
-           processBuilder.inheritIO();
+           if (mcOutput)
+            processBuilder.inheritIO();
            processBuilder.start();
          } catch (Exception e) {
            LOGGER.error("Failed to launch Rise: {}", e.getMessage());
