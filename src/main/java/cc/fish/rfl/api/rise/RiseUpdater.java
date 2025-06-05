@@ -15,10 +15,13 @@ import java.io.IOException;
 import java.lang.management.OperatingSystemMXBean;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -37,10 +40,10 @@ public class RiseUpdater {
 
             URLS = new JSONObject();
             URLS.put("version", "https://raw.githubusercontent.com/risellc/LatestRiseVersion/main/Version");
-            URLS.put("client", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone.jar");
-            URLS.put("client-hash", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Standalone_Hash.txt");
-            URLS.put("libraries", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries.jar");
-            URLS.put("libraries-hash", "https://raw.githubusercontent.com/AlanW5/rise_update/refs/heads/main/Libraries_Hash.txt");
+            URLS.put("client", "https://gitlab.com/rise_update/rise-update/-/raw/main/Standalone.jar?ref_type=heads&inline=false");
+            URLS.put("client-hash", "https://gitlab.com/rise_update/rise-update/-/raw/main/Standalone_Hash.txt?ref_type=heads&inline=false");
+            URLS.put("libraries", "https://gitlab.com/rise_update/rise-update/-/raw/main/Libraries.jar?ref_type=heads&inline=false");
+            URLS.put("libraries-hash", "https://gitlab.com/rise_update/rise-update/-/raw/main/Libraries_Hash.txt?ref_type=heads&inline=false");
         }
     }
 
@@ -63,31 +66,46 @@ public class RiseUpdater {
         }
 
         try {
-            if (!noUpdate) {
-                String clientHash = DownloadUtil.readFromWeb(URLS.getString("client-hash"));
-                String libraryHash = DownloadUtil.readFromWeb(URLS.getString("libraries-hash"));
 
-                if (clientHash == null || libraryHash == null) {
-                    LOGGER.error("Failed to get hashes from the server");
-                    return;
+            boolean needsUpdate = false;
+
+            String clientLocalHash = getFileHash(CLIENT_PATH);
+            String libraryLocalHash = getFileHash(LIBRARY_PATH);
+
+            if (clientLocalHash == null || libraryLocalHash == null) {
+                LOGGER.info("Client files not found, downloading...");
+                needsUpdate = true;
+            } else if (!noUpdate) {
+                String commitsApi = DownloadUtil.readFromWeb("https://gitlab.com/api/v4/projects/66162618/repository/commits?per_page=1");
+                if (commitsApi == null) {
+                    LOGGER.error("Failed to get latest commit from the server");
+                } else {
+                    try {
+                        JSONObject latestCommit = new JSONObject(commitsApi.substring(1, commitsApi.length() - 1));
+                        String commitedDate = latestCommit.getString("committed_date");
+
+                        OffsetDateTime dateTime = OffsetDateTime.parse(commitedDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+                        long lastUpdatedTime = Math.min(
+                                new File(CLIENT_PATH).lastModified(),
+                                new File(LIBRARY_PATH).lastModified()
+                        );
+
+                        OffsetDateTime lastUpdatedDate = OffsetDateTime.ofInstant(Instant.ofEpochMilli(lastUpdatedTime), OffsetDateTime.now().getOffset());
+
+                        if (dateTime.isAfter(lastUpdatedDate)) {
+                            LOGGER.info("Client update found, downloading...");
+                            needsUpdate = true;
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Failed to parse latest commit date", e);
+                    }
                 }
+            }
 
-                String clientLocalHash = getFileHash(CLIENT_PATH);
-                String libraryLocalHash = getFileHash(LIBRARY_PATH);
-
-                if (clientLocalHash == null || libraryLocalHash == null) {
-                    LOGGER.info("Client files not found, downloading...");
-                    updateFiles(false);
-                    return;
-                }
-
-                if (!clientHash.equals(clientLocalHash) || !libraryHash.equals(libraryLocalHash)) {
-                    LOGGER.info("Client update found, downloading...");
-                    updateFiles(true);
-                    return;
-                }
-            } else if (!new File(CLIENT_PATH).exists() || !new File(LIBRARY_PATH).exists()) {
-                LOGGER.error("Client files not found, when running with --no-update, you must have the client files");
+            if (needsUpdate) {
+                LOGGER.info("Updating client files...");
+                updateFiles(true);
                 return;
             }
 
@@ -95,14 +113,12 @@ public class RiseUpdater {
             if (!compressedFile.exists()) {
                 LOGGER.info("Compressed file not found, creating...");
                 createCompressedFile();
-                return;
             }
 
             File nativeDir = new File(NATIVE_PATH);
             if (!nativeDir.exists()) {
                 LOGGER.info("Native DLLs not found, extracting...");
                 extractNatives();
-                return;
             }
 
             LOGGER.info("Client is up to date");
@@ -114,9 +130,19 @@ public class RiseUpdater {
     private void updateFiles(boolean delete) {
         try {
             if (delete) {
-                FileUtils.forceDelete(new File(CLIENT_PATH));
-                FileUtils.forceDelete(new File(LIBRARY_PATH));
-                FileUtils.forceDelete(new File(NATIVE_PATH));
+                File[] filesToDelete = {
+                        new File(CLIENT_PATH),
+                        new File(LIBRARY_PATH),
+                        new File(NATIVE_PATH),
+                        new File(COMPRESSED_PATH)
+                };
+
+                for (File file : filesToDelete) {
+                    if (file.exists()) {
+                        FileUtils.forceDelete(file);
+                        LOGGER.info("Deleted file: {}", file.getAbsolutePath());
+                    }
+                }
             }
 
             DownloadUtil.downloadFile(
@@ -146,7 +172,6 @@ public class RiseUpdater {
 
         try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
             for (ZipEntry entry : libraryZip.stream().toList()) {
-                System.out.println(entry.getName());
                 if (!entry.getName().endsWith("." + os.getNativeExtension()) || entry.getName().contains("/")) continue;
 
                 nativeDll.put(entry.getName(), libraryZip.getInputStream(entry).readAllBytes());
