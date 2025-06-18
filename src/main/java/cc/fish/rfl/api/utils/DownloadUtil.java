@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
 
 @UtilityClass
 public class DownloadUtil {

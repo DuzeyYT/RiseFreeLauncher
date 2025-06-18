@@ -1,6 +1,5 @@
 package cc.fish.rfl.api.rise;
 
-import cc.fish.rfl.api.utils.ConsoleUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

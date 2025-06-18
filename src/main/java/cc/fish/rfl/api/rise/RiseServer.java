@@ -1,20 +1,14 @@
 package cc.fish.rfl.api.rise;
 
-import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.tyrus.server.Server;
-import org.json.JSONObject;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("LoggingSimilarMessage")
 @Getter @Setter
