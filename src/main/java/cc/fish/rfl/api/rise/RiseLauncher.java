@@ -10,11 +10,11 @@ public class RiseLauncher {
 
     public final Logger LOGGER = LogManager.getLogger("Rise Launcher");
 
-    public void launch(boolean mcOutput) {
-        LOGGER.info("Launching Rise...");
+    public void launch(String java, boolean mcOutput) {
+        LOGGER.info("Launching Rise with {}...", java);
 
          try {
-           ProcessBuilder processBuilder = new ProcessBuilder("java", "-javaagent:agent.jar",
+           ProcessBuilder processBuilder = new ProcessBuilder(java, "-javaagent:agent.jar",
                    "-XX:+DisableAttachMechanism", "-noverify",
                    "-Djava.library.path=" + RiseUpdater.NATIVE_PATH, "-cp", RiseUpdater.COMPRESSED_PATH, "Start");
            if (mcOutput)

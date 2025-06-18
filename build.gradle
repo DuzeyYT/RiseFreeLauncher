@@ -10,6 +10,9 @@ repositories {
     mavenCentral()
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
@@ -35,8 +38,8 @@ dependencies {
 
     implementation 'org.json:json:latest.integration'
 
-    implementation 'org.glassfish.tyrus:tyrus-server:2.2.0'
-    implementation 'org.glassfish.tyrus:tyrus-container-grizzly-server:2.2.0'
+    implementation 'org.glassfish.tyrus:tyrus-server:2.0.0'
+    implementation 'org.glassfish.tyrus:tyrus-container-grizzly-server:2.0.0'
 
 }
 

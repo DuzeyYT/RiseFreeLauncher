@@ -1,7 +1,9 @@
 package cc.fish.rfl.api.rise;
 
 import cc.fish.rfl.api.utils.DownloadUtil;
+import cc.fish.rfl.api.utils.InputStreamUtil;
 import cc.fish.rfl.api.utils.OsUtil;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -171,10 +173,10 @@ public class RiseUpdater {
         Map<String, byte[]> nativeDll = new HashMap<>();
 
         try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
-            for (ZipEntry entry : libraryZip.stream().toList()) {
+            for (ZipEntry entry : libraryZip.stream().collect(Collectors.toList())) {
                 if (!entry.getName().endsWith("." + os.getNativeExtension()) || entry.getName().contains("/")) continue;
 
-                nativeDll.put(entry.getName(), libraryZip.getInputStream(entry).readAllBytes());
+                nativeDll.put(entry.getName(), InputStreamUtil.readAllBytes(libraryZip.getInputStream(entry)));
             }
         } catch (Exception e) {
             LOGGER.error("Failed to update client", e);
@@ -206,20 +208,20 @@ public class RiseUpdater {
             List<String> writtenEntries = new ArrayList<>();
 
             try (ZipFile clientZip = new ZipFile(CLIENT_PATH)) {
-                for (ZipEntry entry : clientZip.stream().toList()) {
+                for (ZipEntry entry : clientZip.stream().collect(Collectors.toList())) {
                     writtenEntries.add(entry.getName());
                     zipOut.putNextEntry(new ZipEntry(entry.getName()));
-                    zipOut.write(clientZip.getInputStream(entry).readAllBytes());
+                    zipOut.write(InputStreamUtil.readAllBytes(clientZip.getInputStream(entry)));
                     zipOut.closeEntry();
                 }
             }
 
             try (ZipFile libraryZip = new ZipFile(LIBRARY_PATH)) {
-                for (ZipEntry entry : libraryZip.stream().toList()) {
+                for (ZipEntry entry : libraryZip.stream().collect(Collectors.toList())) {
                     if (writtenEntries.contains(entry.getName())) continue;
                     if (entry.getName().startsWith("org/objectweb")) continue;
                     zipOut.putNextEntry(new ZipEntry(entry.getName()));
-                    zipOut.write(libraryZip.getInputStream(entry).readAllBytes());
+                    zipOut.write(InputStreamUtil.readAllBytes(libraryZip.getInputStream(entry)));
                     zipOut.closeEntry();
                 }
             }

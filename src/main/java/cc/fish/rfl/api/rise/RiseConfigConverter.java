@@ -36,7 +36,9 @@ public class RiseConfigConverter {
                 if (setting.equals("state") || setting.equals("keyCode")) continue;
 
                 Object value = moduleObject.get(setting);
-                if (value instanceof JSONObject jsonObject1) {
+                if (value instanceof JSONObject) {
+                    JSONObject jsonObject1 = (JSONObject) value;
+
                     for (String jsonObject1Key : jsonObject1.keySet()) {
                         stringBuilder
                                 .append(module)
