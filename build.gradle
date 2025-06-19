@@ -41,6 +41,9 @@ dependencies {
     implementation 'org.glassfish.tyrus:tyrus-server:2.0.0'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly-server:2.0.0'
 
+    // commons-cli
+    implementation 'commons-cli:commons-cli:latest.integration'
+
 }
 
 jar {
