@@ -51,21 +51,4 @@ public class ConsoleUtil {
             return "Error while getting custom ASCII art, maybe the font is not supported?";
         }
     }
-
-    public static void runCommand(String command) {
-        Runtime runtime = Runtime.getRuntime();
-        Process process;
-        try {
-            String[] commandParts = command.split(" ");
-            process = runtime.exec(commandParts);
-
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(process.getInputStream()));
-            reader.close();
-
-            process.waitFor();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace(System.err);
-        }
-    }
 }

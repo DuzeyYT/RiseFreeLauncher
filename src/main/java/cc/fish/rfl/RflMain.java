@@ -46,7 +46,9 @@ public class RflMain {
         ConsoleUtil.emptyLine();
 
         // get proper java version
-        String javaCommand = JavaUtil.findProperJava();
+        String javaCommand = commandLine.hasOption("with-java-path")
+            ? commandLine.getOptionValue("with-java-path")
+            : JavaUtil.findProperJava();
 
         // add option to disable auto updates in case this has been patched.
         RiseUpdater.checkAndUpdate(commandLine.hasOption("no-update"));
@@ -87,6 +89,11 @@ public class RflMain {
             options.addOption(Option.builder()
                 .longOpt("no-update")
                 .desc("Disables automatic updates for Rise Client.").build());
+
+            options.addOption(Option.builder()
+                .longOpt("with-java-path").hasArg()
+                .argName("java-path")
+                .desc("Specifies the path to the Java executable to use.").build());
 
             // for developer purposes i guess idk
             options.addOption(Option.builder()

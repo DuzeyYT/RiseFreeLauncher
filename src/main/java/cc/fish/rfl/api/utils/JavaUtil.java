@@ -18,11 +18,11 @@ public class JavaUtil {
 
   public String findProperJava() {
     try {
-      int javaVersion = Integer.parseInt(System.getProperty("java.version").split("\\.")[0]);
+      //int javaVersion = Integer.parseInt(System.getProperty("java.version").split("\\.")[0]);
 
-      if (javaVersion >= 21) { // if the user is already using Java 21 or higher
-        return "java";
-      }
+      //if (javaVersion >= 21) { // if the user is already using Java 21 or higher
+      //  return "java";
+      //}
 
       Path javaPath = OsUtil.getOs() == OsUtil.OS.WINDOWS ? WINDOWS_PATH :
                       OsUtil.getOs() == OsUtil.OS.LINUX ? LINUX_PATH :

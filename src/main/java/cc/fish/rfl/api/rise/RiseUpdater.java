@@ -28,6 +28,7 @@ import java.util.zip.ZipOutputStream;
 public class RiseUpdater {
     public final Logger LOGGER = LogManager.getLogger("Rise Updater");
 
+    private final String RISE_GITLAB = "https://gitlab.com/api/v4/projects/66162618/repository";
     public JSONObject URLS;
 
     static {
@@ -74,7 +75,7 @@ public class RiseUpdater {
                 LOGGER.info("Client files not found, downloading...");
                 needsUpdate = true;
             } else if (!noUpdate) {
-                String commitsApi = DownloadUtil.readFromWeb("https://gitlab.com/api/v4/projects/66162618/repository/commits?per_page=1");
+                String commitsApi = DownloadUtil.readFromWeb(String.format("%s/commits?per_page=1", RISE_GITLAB));
                 if (commitsApi == null) {
                     LOGGER.error("Failed to get latest commit from the server");
                 } else {
